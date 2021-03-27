@@ -10,7 +10,7 @@ use crate::amount::Amount;
 #[derive(Debug)]
 pub struct PaymentEngine {
     tx_by_txid: HashMap<u32, Transaction>,
-    accounts_by_client: HashMap<u16, Account>,
+    pub accounts_by_client: HashMap<u16, Account>,
 }
 impl PaymentEngine {
     pub fn new() -> PaymentEngine {
@@ -208,13 +208,11 @@ impl PaymentEngine {
                 return;
             }
             if let Some(amount) = original_tx.amount.as_ref() {
-                account.available += amount.value();
                 account.held -= amount.value();
 
                 original_tx.status = TransactionStatus::ChargedBacked;
+                account.locked = true;
             }
-
-            account.locked = true;
         }
     }
 }
