@@ -3,9 +3,9 @@ use std::error::Error;
 use std::fs::File;
 
 use crate::account::Account;
+use crate::amount::Amount;
 use crate::transaction::{Transaction, TransactionStatus, TransactionType};
 use crate::transaction_row::TransactionRow;
-use crate::amount::Amount;
 
 #[derive(Debug)]
 pub struct PaymentEngine {

@@ -3,10 +3,10 @@ use std::error::Error;
 use std::fs::File;
 
 mod account;
+mod amount;
 mod engine;
 mod transaction;
 mod transaction_row;
-mod amount;
 
 /// Helper function to parse and validate the required args
 /// We expect one argument and this should be an .csv file.
@@ -44,7 +44,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn input_1() -> Result<(), Box<dyn Error>> {
