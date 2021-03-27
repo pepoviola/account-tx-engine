@@ -1,4 +1,4 @@
-use crate::Amount;
+use crate::amount::Amount;
 use std::str::FromStr;
 
 #[derive(Debug)]

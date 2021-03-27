@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::transaction::{Transaction, TransactionStatus, TransactionType};
-use crate::Amount;
+use crate::amount::Amount;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]

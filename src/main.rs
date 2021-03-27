@@ -6,6 +6,7 @@ mod account;
 mod engine;
 mod transaction;
 mod transaction_row;
+mod amount;
 
 /// Helper function to parse and validate the required args
 /// We expect one argument and this should be an .csv file.
@@ -29,30 +30,6 @@ fn get_reader_from_file(file_name: &str) -> Result<csv::Reader<File>, Box<dyn Er
         .from_path(file_name)?;
 
     Ok(reader)
-}
-
-#[derive(Debug)]
-pub struct Amount {
-    inner: u64,
-}
-
-impl Amount {
-    pub fn new(inner: u64) -> Amount {
-        Amount { inner }
-    }
-
-    pub fn value(&self) -> u64 {
-        self.inner
-    }
-
-    pub fn from_input(amount: f64) -> Amount {
-        let inner = (amount * 1.0e+4_f64) as u64;
-        Amount { inner }
-    }
-
-    pub fn to_output(&self) -> f64 {
-        (self.inner as f64 / 1.0e+4_f64) as f64
-    }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

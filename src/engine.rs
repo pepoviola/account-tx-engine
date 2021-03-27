@@ -5,7 +5,7 @@ use std::fs::File;
 use crate::account::Account;
 use crate::transaction::{Transaction, TransactionStatus, TransactionType};
 use crate::transaction_row::TransactionRow;
-use crate::Amount;
+use crate::amount::Amount;
 
 #[derive(Debug)]
 pub struct PaymentEngine {
@@ -202,7 +202,7 @@ impl PaymentEngine {
         if let Some(original_tx) = self.tx_by_txid.get_mut(&tx.id) {
             if original_tx.status != TransactionStatus::Disputed {
                 eprintln!(
-                    "Ignoring dispute in transaction {} for client {}, was processed",
+                    "Ignoring chargeback in transaction {} for client {}, wasn't disputed",
                     original_tx.id, original_tx.account
                 );
                 return;
