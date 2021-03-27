@@ -3,10 +3,10 @@ use std::error::Error;
 use std::fs::File;
 
 mod account;
+mod amount;
 mod engine;
 mod transaction;
 mod transaction_row;
-mod amount;
 
 /// Helper function to parse and validate the required args
 /// We expect one argument and this should be an .csv file.
@@ -39,4 +39,82 @@ fn main() -> Result<(), Box<dyn Error>> {
     engine.process_from_reader(reader)?;
     engine.output_report();
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn input_1() -> Result<(), Box<dyn Error>> {
+        let reader = get_reader_from_file("./tests/input_1.csv")?;
+        let mut engine = engine::PaymentEngine::new();
+        engine.process_from_reader(reader)?;
+        let client_id: u16 = 1;
+        if let Some(client) = engine.accounts_by_client.get(&client_id) {
+            assert_eq!(client.locked, false);
+            assert_eq!(client.available, amount::Amount::from_input(1.5).value());
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn input_disput() -> Result<(), Box<dyn Error>> {
+        let reader = get_reader_from_file("./tests/input_d.csv")?;
+        let mut engine = engine::PaymentEngine::new();
+        engine.process_from_reader(reader)?;
+        let client_id: u16 = 1;
+        if let Some(client) = engine.accounts_by_client.get(&client_id) {
+            assert_eq!(client.locked, false);
+            assert_eq!(client.available, amount::Amount::from_input(0.0).value());
+            assert_eq!(client.held, amount::Amount::from_input(1.5).value());
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn input_resolve() -> Result<(), Box<dyn Error>> {
+        let reader = get_reader_from_file("./tests/input_r.csv")?;
+        let mut engine = engine::PaymentEngine::new();
+        engine.process_from_reader(reader)?;
+        let client_id: u16 = 1;
+        if let Some(client) = engine.accounts_by_client.get(&client_id) {
+            assert_eq!(client.locked, false);
+            assert_eq!(client.available, amount::Amount::from_input(1.5).value());
+            assert_eq!(client.held, amount::Amount::from_input(0.0).value());
+        }
+
+        Ok(())
+    }
+    #[test]
+    fn input_widrawal() -> Result<(), Box<dyn Error>> {
+        let reader = get_reader_from_file("./tests/input_w.csv")?;
+        let mut engine = engine::PaymentEngine::new();
+        engine.process_from_reader(reader)?;
+        let client_id: u16 = 2;
+        if let Some(client) = engine.accounts_by_client.get(&client_id) {
+            assert_eq!(client.locked, false);
+            assert_eq!(client.available, amount::Amount::from_input(0.9988).value());
+            assert_eq!(client.held, amount::Amount::from_input(0.0).value());
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn input_lock() -> Result<(), Box<dyn Error>> {
+        let reader = get_reader_from_file("./tests/input_lock.csv")?;
+        let mut engine = engine::PaymentEngine::new();
+        engine.process_from_reader(reader)?;
+        let client_id: u16 = 2;
+        if let Some(client) = engine.accounts_by_client.get(&client_id) {
+            assert_eq!(client.locked, true);
+            assert_eq!(client.available, amount::Amount::from_input(0.0).value());
+            assert_eq!(client.held, amount::Amount::from_input(0.0).value());
+        }
+
+        Ok(())
+    }
 }
